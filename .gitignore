@@ -1,0 +1,21 @@
+# Calva VS Code extension
+.calva/
+# unignore Calva configuration. I keep some REPL snippets there (e.g. Portal)
+!calva/config.edn
+
+# static analyzer and linter for Clojure code
+.clj-kondo/
+
+#classpath cache
+.cpcache/
+
+#environment variables
+.envrc
+
+#Language Server Protocol
+.lsp/
+
+.nrepl-port
+
+# compilation targets (e.g. jars, uberjars)
+target/

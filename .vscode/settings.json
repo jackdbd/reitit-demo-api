@@ -1,0 +1,14 @@
+{
+  "editor.formatOnSave": false,
+  // hide these folders from the VS Code side panel (explorer)
+  "files.exclude": {
+    ".calva/": true,
+    ".clj-kondo/": true,
+    ".cpcache/": true,
+    ".lsp/": true
+  },
+  "[json]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode",
+    "editor.formatOnSave": true
+  }
+}
