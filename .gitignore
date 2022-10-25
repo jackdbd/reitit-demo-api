@@ -6,16 +6,28 @@
 # static analyzer and linter for Clojure code
 .clj-kondo/
 
-#classpath cache
+# classpath cache
 .cpcache/
 
-#environment variables
+# environment variables
 .envrc
 
-#Language Server Protocol
+# Language Server Protocol
 .lsp/
 
 .nrepl-port
 
+.portal/
+
+# Node.js dependencies
+node_modules/
+
+# Snaplet database snapshots
+.snaplet/config.json
+.snaplet/id_rsa
+.snaplet/snapshots
+.snaplet/structure.d.ts
+
 # compilation targets (e.g. jars, uberjars)
 target/
+

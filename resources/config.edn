@@ -1,0 +1,26 @@
+; Clojure encourages fully qualified keywords, i.e. domain/key
+{:jackdbd.reitit-demo-api/relational-store
+ {:dbtype "postgresql"
+  :host #profile {:default "postgres"}
+  :dbname #profile {:default "root"
+                    :dev "root"
+                    :prod "prod-dbname"}
+  :user #profile {:default "root"
+                  :dev "root"
+                  :prod "prod-user"}
+  :password #profile {:default "root"
+                      :dev "root"
+                      :prod "super-secret"}
+  :port 5432}
+
+ :jackdbd.reitit-demo-api/router
+ {:datasource #ig/ref :jackdbd.reitit-demo-api/relational-store}
+
+ :jackdbd.reitit-demo-api/http-server
+ {:handler #ig/ref :jackdbd.reitit-demo-api/router
+  :join? false
+  :port #profile {:default 3000
+                  :dev #long #env PORT
+                  :prod #long #env PORT
+                  :test 5000}}}
+

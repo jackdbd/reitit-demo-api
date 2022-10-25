@@ -1,0 +1,28 @@
+# Configuration file for docker-compose
+#
+# Remember that the syntax for mappings (ports, volumes) follows the syntax
+# `from:to`, where `from` is the docker host, and `to` is the docker container.
+#
+# Reference:
+# https://docs.docker.com/compose/compose-file/
+# https://docs.docker.com/compose/compose-file/build/
+
+version: '3.9'
+
+services:
+  postgres:
+    image: postgres:14.5-alpine
+    # image: postgres:15.0-alpine
+    restart: always
+    environment:
+      - POSTGRES_USER=root
+      - POSTGRES_PASSWORD=root
+      - POSTGRES_DB=root
+    ports:
+      - "5432:5432"
+    # volumes:
+      # When the PostgreSQL container starts, it runs any script provided in the
+      # `docker-entrypoint-initdb.d` directory.
+      # For further information, see "Initialization scripts" here:
+      # https://hub.docker.com/_/postgres
+      # - ./resources/seed.sql:/docker-entrypoint-initdb.d/database-seed.sql

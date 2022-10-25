@@ -1,12 +1,49 @@
 {
+  // Calva (Clojure development)
+  // General settings: https://calva.io/customizing/
+  // https://calva.io/paredit/#about-the-keyboard-shortcuts
+  // "calva.paredit.defaultKeyMap": "none",
+
+  // Jack-in connect sequences: https://calva.io/connect-sequences/
+  "calva.replConnectSequences": [
+    {
+      "name": "Portal Connect",
+      "projectType": "deps.edn",
+      "cljsType": "none",
+      "menuSelections": {
+        "cljAliases": ["dev"]
+      }
+    }
+  ],
+  "calva.showCalvaSaysOnStart": false,
+  "calva.showDocstringInParameterHelp": true,
+
   "editor.formatOnSave": false,
+
   // hide these folders from the VS Code side panel (explorer)
   "files.exclude": {
-    ".calva/": true,
+    ".calva/": false,
     ".clj-kondo/": true,
     ".cpcache/": true,
-    ".lsp/": true
+    ".lsp/": true,
+    ".portal/": false,
+    ".snaplet/": false
   },
+
+  // https://github.com/mtxr/vscode-sqltools
+  "sqltools.connections": [
+    {
+      "previewLimit": 50,
+      "server": "postgres",
+      "port": 5432,
+      "driver": "PostgreSQL",
+      "name": "local PostgreSQL in Docker",
+      "database": "root",
+      "username": "root",
+      "password": "root"
+    }
+  ],
+
   "[json]": {
     "editor.defaultFormatter": "esbenp.prettier-vscode",
     "editor.formatOnSave": true

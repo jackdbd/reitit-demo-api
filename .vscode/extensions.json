@@ -1,3 +1,9 @@
 {
-  "recommendations": ["betterthantomorrow.calva", "esbenp.prettier-vscode"]
+  "recommendations": [
+    "betterthantomorrow.calva",
+    "djblue.portal",
+    "esbenp.prettier-vscode",
+    "mtxr.sqltools",
+    "mtxr.sqltools-driver-pg"
+  ]
 }

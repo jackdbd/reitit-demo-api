@@ -1,0 +1,79 @@
+{:min-bb-version "0.10.163"
+ 
+ :tasks
+ {:requires ([babashka.fs :as fs])
+
+  audit
+  {:doc "Audit npm packages"
+   :task (shell "npm audit --audit-level moderate")}
+
+  build:uberjar
+  {:doc "Build the uberjar"
+   :task (clojure "-T:build uber")}
+
+  clean
+  {:doc "Remove npm packages"
+   :task (shell "rm -rf node_modules")}
+
+  dc-up
+  {:doc "Create and start containers with docker-compose"
+   :task (shell "docker-compose up")}
+
+  dc-down
+  {:doc "Stop containers and remove resources"
+   :task (shell "docker-compose down --remove-orphans")}
+
+  install
+  {:doc "Install npm packages and jars (in parallel)"
+   :task (run '-install {:parallel true})}
+
+  -install
+  {:depends [install:npm-packages install:jars]}
+
+  install:jars
+  {:doc "Install jars."
+   :task (shell "clojure -A:dev")}
+
+  install:npm-packages
+  {:doc "Install npm packages from npm.js"
+   :task (shell "npm install")}
+
+  migrate:latest
+  {:doc "Apply all migrations"
+   :task (shell "npx knex migrate:latest")}
+
+  migrate:make
+  {:doc "Create a new migration script using Knex"
+   :task (let [[migration-name] *command-line-args*]
+           (when (empty? migration-name)
+             (println "Usage: bb migrate:make <migration-name>")
+             (System/exit 1))
+           (shell (str "npx knex migrate:make " migration-name))
+           (println "JS migration script created. Now you should create up/down migrations in SQL"))}
+
+  migrate:rollback
+  {:doc "Rollback migrations"
+   :task (shell "npx knex migrate:rollback")}
+
+  nuke
+  {:doc "Remove package-lock.json"
+   :depends [clean]
+   :task (shell "rm -rf package-lock.json")}
+
+  seed
+  {:doc "Seed the database using a SQL script"
+   :depends [migrate:latest]
+   :task (shell "bb -f dev/db_demo.clj")}
+
+  serve
+  {:doc "Start a Jetty HTTP server"
+   :task (clojure "-M -m reitit-demo-api.reitit-demo-api")}
+
+  snaplet-config-generate
+  {:doc "Generate transform files for Snaplet"
+   :task (shell "snaplet config generate")}
+
+  snaplet-seed
+  {:doc "Seed the database using the Snaplet CLI (interactive mode)"
+   :depends [snaplet-config-generate migrate:latest]
+   :task (shell "snaplet seed --interactive")}}}
