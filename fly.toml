@@ -10,6 +10,7 @@ processes = []
   strategy = "canary"
 
 [env]
+  APP_PROFILE = "prod"
   PORT = "8080"
 
 [experimental]

@@ -18,5 +18,6 @@
         ds (connection/->pool HikariDataSource {:jdbcUrl jdbc-url})
         app (def-app ds)]
     (println "=== profile ===" profile)
+    (println "=== JDBC URL ===" jdbc-url)
     (println "server listening on port" port)
     (jetty/run-jetty app {:join (:join opts) :port port})))

@@ -31,8 +31,9 @@
 
 (defn jdbc-url
   [profile]
+    ;; (-> (db-spec profile) :db-url db-url->jdbc-url)
   (if (= :prod profile)
-    (-> (db-spec profile) :db-url db-url->jdbc-url)
+    (-> (db-spec profile) :jdbc-url)
     (-> (db-spec profile) :jdbc-url)))
 
  (defn aero-prep

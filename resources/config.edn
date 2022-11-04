@@ -5,14 +5,12 @@
                     :prod-proxied #include "../secrets/postgres-prod-proxied.edn"}
 
  :reitit-demo-api/relational-store
- {:db-url #profile {:default nil
-                    :prod #env DATABASE_URL}
-
-  :jdbc-url #profile {:default nil
+ {:jdbc-url #profile {:default nil
                       :dev #join ["jdbc:postgresql://"
                                   "postgres:5432/root"
                                   "?"
                                   "user=root&password=root"]
+                      :prod #env JDBC_URL
                       :prod-proxied #join ["jdbc:postgresql://"
                                            #ref [:pg-spec :host] ":" #ref [:pg-spec :port] "/"
                                            "?"
