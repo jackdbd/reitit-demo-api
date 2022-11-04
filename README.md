@@ -106,7 +106,7 @@ bb migrate:rollback
 ## Test
 
 ```sh
-clojure -X:test
+bb test
 ```
 
 ## Version management
@@ -131,9 +131,11 @@ neil version patch
 
 neil updates the `:version` keyword in your `deps.edn` and creates a git tag for you.
 
-## Deploy (TODO)
+:warning: TODO keep the version in `deps.edn` in sync with the one assigned by Fly.io.
 
-Deploy to Google Cloud Run.
+## Deploy
+
+Deploy to Fly.io:
 
 ```sh
 bb deploy

@@ -1,8 +1,8 @@
 {:min-bb-version "0.8.0"
- 
+
 ;;  https://book.babashka.org/#_pods_in_bb_edn
  :pods {org.babashka/postgresql {:version "0.1.1"}}
- 
+
  :tasks
  {:requires ([babashka.fs :as fs]
              [clojure.edn :as edn]
@@ -150,4 +150,8 @@
   snaplet-seed
   {:doc "Seed the database using the Snaplet CLI (interactive mode)"
    :depends [snaplet-config-generate migrate:latest]
-   :task (shell "snaplet seed --interactive")}}}
+   :task (shell "snaplet seed --interactive")}
+
+  test
+  {:doc "Run tests"
+   :task (clojure "-X:test")}}}

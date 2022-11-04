@@ -16,7 +16,11 @@
                       :prod-proxied #join ["jdbc:postgresql://"
                                            #ref [:pg-spec :host] ":" #ref [:pg-spec :port] "/"
                                            "?"
-                                           "user=" #ref [:pg-spec :user] "&password=" #ref [:pg-spec :password]]}}
+                                           "user=" #ref [:pg-spec :user] "&password=" #ref [:pg-spec :password]]
+                      :test #join ["jdbc:postgresql://"
+                                   "postgres:5432/root"
+                                   "?"
+                                   "user=root&password=root"]}}
 
  :reitit-demo-api/router
  {:datasource #ig/ref :reitit-demo-api/relational-store}
