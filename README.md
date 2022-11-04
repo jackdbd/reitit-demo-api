@@ -2,6 +2,8 @@
 
 A simple API to learn [Reitit](https://github.com/metosin/reitit).
 
+App deployed to Fly.io: https://delicate-flower-703.fly.dev
+
 ## Installation
 
 This project can be managed with the [Babashka Tasks Runner](https://book.babashka.org/#tasks). The tasks are defined in [this bb.edn file](./bb.edn). You can check the list of available tasks using this command:

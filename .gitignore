@@ -12,6 +12,10 @@
 # environment variables
 .envrc
 
+# secrets
+secrets/*
+!secrets/README.md
+
 # Language Server Protocol
 .lsp/
 

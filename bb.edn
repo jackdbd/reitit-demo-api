@@ -1,9 +1,23 @@
-{:min-bb-version "0.10.163"
+{:min-bb-version "0.8.0"
+ 
+;;  https://book.babashka.org/#_pods_in_bb_edn
+ :pods {org.babashka/postgresql {:version "0.1.1"}}
  
  :tasks
  {:requires ([babashka.fs :as fs]
              [clojure.edn :as edn]
-             [clojure.string :as str])
+             [clojure.string :as str]
+             [pod.babashka.postgresql :as pg])
+
+  jdbc-url
+  {:task (let [db-url (System/getenv "DATABASE_URL")
+               s (last (str/split (str db-url) (re-pattern "//")))
+               [user-password host-port] (str/split s (re-pattern "@"))
+               [user password] (str/split user-password (re-pattern ":"))
+               [host port] (str/split host-port (re-pattern ":"))
+               jdbc-url (format "jdbc:postgresql://%s:%s?user=%s&password=%s" host port user password)]
+           (println db-url)
+           (println jdbc-url))}
 
   audit
   {:doc "Audit npm packages"
@@ -39,6 +53,17 @@
   {:doc "Stop containers and remove resources"
    :task (shell "docker-compose down --remove-orphans")}
 
+  deploy
+  {:doc "Deploy the app to Fly.io"
+   :task (let [project (-> (edn/read-string (slurp "deps.edn")) :aliases :neil :project)
+               name (first (str/split (str (:name project)) (re-pattern "/")))
+               version (:version project)
+               tag (str name ":" version)
+               build-args (format "--build-arg APP_NAME=%s --build-arg APP_VERSION=%s" name version)
+               cmd (format "flyctl deploy %s --verbose" build-args)]
+           (println cmd)
+           (shell cmd))}
+
   dive
   {:doc "Inspect the container image with dive (you need to build the image first)"
    :task (let [project (-> (edn/read-string (slurp "deps.edn")) :aliases :neil :project)
@@ -65,8 +90,9 @@
    :task (shell "npm install")}
 
   migrate:latest
-  {:doc "Apply all migrations"
-   :task (shell "npx knex migrate:latest")}
+  {:doc "Apply all migrations to the database identified by DB_ENV"
+   :task (let [cmd (format "npx knex migrate:latest --env %s" (System/getenv "DB_ENV"))]
+           (shell cmd))}
 
   migrate:make
   {:doc "Create a new migration script using Knex"
@@ -78,8 +104,14 @@
            (println "JS migration script created. Now you should create up/down migrations in SQL"))}
 
   migrate:rollback
-  {:doc "Rollback migrations"
-   :task (shell "npx knex migrate:rollback")}
+  {:doc "Rollback migrations to the database identified by DB_ENV"
+   :task (let [cmd (format "npx knex migrate:rollback --env %s" (System/getenv "DB_ENV"))]
+           (shell cmd))}
+
+  migrations
+  {:doc "List all migrations applied/pending for the database identified by DB_ENV"
+   :task (let [cmd (format "npx knex migrate:list --env %s" (System/getenv "DB_ENV"))]
+           (shell cmd))}
 
   nuke
   {:doc "Remove package-lock.json"
@@ -89,7 +121,7 @@
   seed
   {:doc "Seed the database using a SQL script"
    :depends [migrate:latest]
-   :task (shell "bb -f dev/db_demo.clj")}
+   :task (shell "bb -f dev/db_seed.clj")}
 
   serve:container
   {:doc "Run the containerized app."

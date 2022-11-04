@@ -4,6 +4,7 @@
     "djblue.portal",
     "esbenp.prettier-vscode",
     "mtxr.sqltools",
-    "mtxr.sqltools-driver-pg"
+    "mtxr.sqltools-driver-pg",
+    "tamasfe.even-better-toml"
   ]
 }

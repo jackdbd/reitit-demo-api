@@ -1,12 +1,11 @@
 (ns reitit-demo-api.db
   "This namespace represents the bridge between the database world and the
    clojure world."
-  (:require [reitit-demo-api.config :refer [db-spec]]
+  (:require [reitit-demo-api.config :as conf]
             [reitit-demo-api.db-fns :as db-fns]))
 
-
 (comment
-  (def spec (db-spec :dev))
+  (def spec (conf/db-spec :dev))
   
   (db-fns/get-persons spec)
   (db-fns/get-pets spec)

@@ -14,6 +14,7 @@
         opts (:reitit-demo-api/http-server cfg)
         ds (connection/->pool HikariDataSource {:jdbcUrl (jdbc-url :prod)})
         app (def-app ds)]
-    (print "JDBC URL" (jdbc-url :prod))
+    (println "cfg" cfg)
+    (println "JDBC URL" (jdbc-url :prod))
     (println "server listening on port" (:port opts))
     (jetty/run-jetty app {:join (:join opts) :port (:port opts)})))

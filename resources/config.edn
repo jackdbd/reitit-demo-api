@@ -1,17 +1,17 @@
-; Clojure encourages fully qualified keywords, i.e. domain/key
-{:reitit-demo-api/relational-store
+; Tip: Clojure encourages fully qualified keywords, i.e. domain/key
+{:secrets-prod #include "../secrets/secrets-prod.edn"
+ 
+ :reitit-demo-api/relational-store
  {:dbtype "postgresql"
   :host #profile {:default "postgres"}
   :dbname #profile {:default "root"
-                    :dev "root"
-                    :prod "prod-dbname"}
+                    :dev "root"}
+  :db-url #env DATABASE_URL
   :user #profile {:default "root"
-                  :dev "root"
-                  :prod "prod-user"}
+                  :dev "root"}
   :password #profile {:default "root"
-                      :dev "root"
-                      :prod "super-secret"}
-  :port 5432}
+                      :dev "root"}
+  :port #profile {:default 5432}}
 
  :reitit-demo-api/router
  {:datasource #ig/ref :reitit-demo-api/relational-store}
