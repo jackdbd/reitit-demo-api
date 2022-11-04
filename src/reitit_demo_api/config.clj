@@ -27,14 +27,13 @@
         [user-password host-port] (str/split s (re-pattern "@"))
         [user password] (str/split user-password (re-pattern ":"))
         [host port] (str/split host-port (re-pattern ":"))]
-    (format "jdbc:postgresql://%s:%s?user=%s&password=%s" host port user password)))
+    (format "jdbc:postgresql://%s:%s/?user=%s&password=%s" host port user password)))
 
 (defn jdbc-url
   [profile]
-  (let [{:keys [dbtype db-url host port dbname user password]} (db-spec profile)]
-    (case profile
-      :dev (format "jdbc:%s://%s:%s/%s?user=%s&password=%s", dbtype host port dbname user password)
-      :prod (db-url->jdbc-url db-url))))
+  (if (= :prod profile)
+    (-> (db-spec profile) :db-url db-url->jdbc-url)
+    (-> (db-spec profile) :jdbc-url)))
 
  (defn aero-prep
   "Parses the system config and updates values for the given profile.

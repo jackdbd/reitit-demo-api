@@ -9,16 +9,6 @@
              [clojure.string :as str]
              [pod.babashka.postgresql :as pg])
 
-  jdbc-url
-  {:task (let [db-url (System/getenv "DATABASE_URL")
-               s (last (str/split (str db-url) (re-pattern "//")))
-               [user-password host-port] (str/split s (re-pattern "@"))
-               [user password] (str/split user-password (re-pattern ":"))
-               [host port] (str/split host-port (re-pattern ":"))
-               jdbc-url (format "jdbc:postgresql://%s:%s?user=%s&password=%s" host port user password)]
-           (println db-url)
-           (println jdbc-url))}
-
   audit
   {:doc "Audit npm packages"
    :task (shell "npm audit --audit-level moderate")}
@@ -60,7 +50,8 @@
                version (:version project)
                tag (str name ":" version)
                build-args (format "--build-arg APP_NAME=%s --build-arg APP_VERSION=%s" name version)
-               cmd (format "flyctl deploy %s --verbose" build-args)]
+               env-vars (format "--env JDBC_URL=%s" (System/getenv "JDBC_URL"))
+               cmd (format "flyctl deploy %s %s --verbose" build-args env-vars)]
            (println cmd)
            (shell cmd))}
 
@@ -90,8 +81,8 @@
    :task (shell "npm install")}
 
   migrate:latest
-  {:doc "Apply all migrations to the database identified by DB_ENV"
-   :task (let [cmd (format "npx knex migrate:latest --env %s" (System/getenv "DB_ENV"))]
+  {:doc "Apply all migrations to the database identified by APP_PROFILE"
+   :task (let [cmd (format "npx knex migrate:latest --env %s" (System/getenv "APP_PROFILE"))]
            (shell cmd))}
 
   migrate:make
@@ -104,13 +95,13 @@
            (println "JS migration script created. Now you should create up/down migrations in SQL"))}
 
   migrate:rollback
-  {:doc "Rollback migrations to the database identified by DB_ENV"
-   :task (let [cmd (format "npx knex migrate:rollback --env %s" (System/getenv "DB_ENV"))]
+  {:doc "Rollback migrations to the database identified by APP_PROFILE"
+   :task (let [cmd (format "npx knex migrate:rollback --env %s" (System/getenv "APP_PROFILE"))]
            (shell cmd))}
 
   migrations
-  {:doc "List all migrations applied/pending for the database identified by DB_ENV"
-   :task (let [cmd (format "npx knex migrate:list --env %s" (System/getenv "DB_ENV"))]
+  {:doc "List all migrations applied/pending for the database identified by APP_PROFILE"
+   :task (let [cmd (format "npx knex migrate:list --env %s" (System/getenv "APP_PROFILE"))]
            (shell cmd))}
 
   nuke
@@ -132,7 +123,8 @@
                tag (str name ":" version)
                host-port 4000
                container-port 3000
-               cmd (format "docker run -it --rm -p %1$s:%2$s --env PORT=%2$s %3$s" host-port container-port tag)]
+               profile (System/getenv "APP_PROFILE")
+               cmd (format "docker run -it --rm -p %1$s:%2$s --env PORT=%2$s --env APP_PROFILE=%3$s %4$s" host-port container-port profile tag)]
            (println cmd)
            (shell cmd))}
 
@@ -141,14 +133,15 @@
    :task (clojure "-M -m reitit-demo-api.reitit-demo-api")}
 
   serve:jar
-  {:doc "Run the uberjar"
-  ;;  :depends [build:jar]
+  {:doc "Build the uberjar and immediately run it (Jetty listens on PORT)"
+   :depends [build:jar]
    :task (let [project (-> (edn/read-string (slurp "deps.edn")) :aliases :neil :project)
                name (first (str/split (str (:name project)) (re-pattern "/")))
                version (:version project)
+               profile (System/getenv "APP_PROFILE")
                port (or (System/getenv "PORT") 7000)
                cmd (format "java -jar target/%s-%s-standalone.jar" name version)]
-           (shell {:extra-env {"PORT" port}} cmd))}
+           (shell {:extra-env {"APP_PROFILE" profile "PORT" port}} cmd))}
 
   snaplet-config-generate
   {:doc "Generate transform files for Snaplet"

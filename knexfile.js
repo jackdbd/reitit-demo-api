@@ -4,8 +4,10 @@ const migrations = {
   tableName: "knex_migrations",
 };
 
+// See APP_PROFILE (dev, prod, prod-proxied, test)
+
 const config = {
-  development: {
+  dev: {
     client: "postgresql",
     connection: {
       port: 5432,
@@ -19,7 +21,7 @@ const config = {
       max: 10,
     },
   },
-  "production-proxied": {
+  "prod-proxied": {
     client: "postgresql",
     connection: {
       port: process.env.DB_PROD_PROXY_PORT,

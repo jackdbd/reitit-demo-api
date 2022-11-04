@@ -10,8 +10,6 @@ processes = []
   strategy = "canary"
 
 [env]
-  DB_ENV = "production"
-  NODE_ENV = "production"
   PORT = "8080"
 
 [experimental]

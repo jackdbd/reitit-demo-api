@@ -1,17 +1,22 @@
-; Tip: Clojure encourages fully qualified keywords, i.e. domain/key
-{:secrets-prod #include "../secrets/secrets-prod.edn"
- 
+; TIP: Clojure encourages fully qualified keywords, i.e. domain/key
+; WATCH OUT: secrets are not tracked in git, and are not bundled in the uberjar
+{:pg-spec #profile {:default nil
+                    :dev #include "../secrets/postgres-dev.edn"
+                    :prod-proxied #include "../secrets/postgres-prod-proxied.edn"}
+
  :reitit-demo-api/relational-store
- {:dbtype "postgresql"
-  :host #profile {:default "postgres"}
-  :dbname #profile {:default "root"
-                    :dev "root"}
-  :db-url #env DATABASE_URL
-  :user #profile {:default "root"
-                  :dev "root"}
-  :password #profile {:default "root"
-                      :dev "root"}
-  :port #profile {:default 5432}}
+ {:db-url #profile {:default nil
+                    :prod #env DATABASE_URL}
+
+  :jdbc-url #profile {:default nil
+                      :dev #join ["jdbc:postgresql://"
+                                  "postgres:5432/root"
+                                  "?"
+                                  "user=root&password=root"]
+                      :prod-proxied #join ["jdbc:postgresql://"
+                                           #ref [:pg-spec :host] ":" #ref [:pg-spec :port] "/"
+                                           "?"
+                                           "user=" #ref [:pg-spec :user] "&password=" #ref [:pg-spec :password]]}}
 
  :reitit-demo-api/router
  {:datasource #ig/ref :reitit-demo-api/relational-store}
@@ -22,4 +27,5 @@
   :port #profile {:default 3000
                   :dev #long #env PORT
                   :prod #long #env PORT
+                  :prod-proxied #long #env PORT
                   :test 5000}}}
