@@ -25,7 +25,7 @@
                      integrant/repl {:mvn/version "0.3.2"}}}
 
   :neil {:project {:name reitit-demo-api/reitit-demo-api
-                   :version "0.0.3"}}
+                   :version "0.1.0"}}
 
   :test {:extra-paths ["test"]
          :extra-deps {io.github.cognitect-labs/test-runner
