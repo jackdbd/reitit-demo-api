@@ -111,14 +111,23 @@ clojure -X:test
 
 This project uses neil to manage versioning.
 
-First, set the project version. These commands set the  in `deps.edn`
+With neil, the **first time** you want to set the version of a project, use `neil version set VERSION`. For example:
 
 ```sh
 neil version set 0.0.1
+```
+
+neil adds the `:version` keyword to your `deps.edn` and creates a git tag for you.
+
+Then, you can use semantic versioning to assign versions. Important: type just `neil version`, not type `neil version set`.
+
+```sh
 neil version major
 neil version minor
 neil version patch
 ```
+
+neil updates the `:version` keyword in your `deps.edn` and creates a git tag for you.
 
 ## Deploy (TODO)
 

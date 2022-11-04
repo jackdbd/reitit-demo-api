@@ -1,19 +1,35 @@
 {:min-bb-version "0.10.163"
  
  :tasks
- {:requires ([babashka.fs :as fs])
+ {:requires ([babashka.fs :as fs]
+             [clojure.edn :as edn]
+             [clojure.string :as str])
 
   audit
   {:doc "Audit npm packages"
    :task (shell "npm audit --audit-level moderate")}
 
-  build:uberjar
+  build:image
+  {:doc "Build the Docker image"
+   :task (let [project (-> (edn/read-string (slurp "deps.edn")) :aliases :neil :project)
+               name (first (str/split (str (:name project)) (re-pattern "/")))
+               version (:version project)
+               tag (str name ":" version)
+               options (format "--file Dockerfile --build-arg APP_NAME=%s --build-arg APP_VERSION=%s --tag %s" name version tag)
+               cmd (format "docker build ./ %s" options)]
+           (shell cmd))}
+
+  build:jar
   {:doc "Build the uberjar"
    :task (clojure "-T:build uber")}
 
   clean
   {:doc "Remove npm packages"
    :task (shell "rm -rf node_modules")}
+
+  clean:target
+  {:doc "Remove compilation artifacts"
+   :task (clojure "-T:build clean")}
 
   dc-up
   {:doc "Create and start containers with docker-compose"
@@ -22,6 +38,16 @@
   dc-down
   {:doc "Stop containers and remove resources"
    :task (shell "docker-compose down --remove-orphans")}
+
+  dive
+  {:doc "Inspect the container image with dive (you need to build the image first)"
+   :task (let [project (-> (edn/read-string (slurp "deps.edn")) :aliases :neil :project)
+               name (first (str/split (str (:name project)) (re-pattern "/")))
+               version (:version project)
+               tag (str name ":" version)
+               cmd (format "dive %s" tag)]
+           (println cmd)
+           (shell cmd))}
 
   install
   {:doc "Install npm packages and jars (in parallel)"
@@ -65,9 +91,32 @@
    :depends [migrate:latest]
    :task (shell "bb -f dev/db_demo.clj")}
 
-  serve
-  {:doc "Start a Jetty HTTP server"
+  serve:container
+  {:doc "Run the containerized app."
+   :depends [build:image]
+   :task (let [project (-> (edn/read-string (slurp "deps.edn")) :aliases :neil :project)
+               name (first (str/split (str (:name project)) (re-pattern "/")))
+               version (:version project)
+               tag (str name ":" version)
+               host-port 4000
+               container-port 3000
+               cmd (format "docker run -it --rm -p %1$s:%2$s --env PORT=%2$s %3$s" host-port container-port tag)]
+           (println cmd)
+           (shell cmd))}
+
+  serve:main
+  {:doc "Execute the -main function of the entry point of the app."
    :task (clojure "-M -m reitit-demo-api.reitit-demo-api")}
+
+  serve:jar
+  {:doc "Run the uberjar"
+  ;;  :depends [build:jar]
+   :task (let [project (-> (edn/read-string (slurp "deps.edn")) :aliases :neil :project)
+               name (first (str/split (str (:name project)) (re-pattern "/")))
+               version (:version project)
+               port (or (System/getenv "PORT") 7000)
+               cmd (format "java -jar target/%s-%s-standalone.jar" name version)]
+           (shell {:extra-env {"PORT" port}} cmd))}
 
   snaplet-config-generate
   {:doc "Generate transform files for Snaplet"

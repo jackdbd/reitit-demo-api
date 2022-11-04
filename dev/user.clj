@@ -40,35 +40,35 @@
   (.close *ds*)
   )
 
-(defmethod ig/init-key :jackdbd.reitit-demo-api/relational-store [k db-spec]
+(defmethod ig/init-key :reitit-demo-api/relational-store [k db-spec]
   (println (str "system key " k " initialized to " db-spec))
   (println "Create database connection pool")
   (let [datasource (connection/->pool HikariDataSource {:jdbcUrl (jdbc-url :dev)})]
     datasource))
 
-(defmethod ig/halt-key! :jackdbd.reitit-demo-api/relational-store [k datasource]
+(defmethod ig/halt-key! :reitit-demo-api/relational-store [k datasource]
   (println (str "system key " k " halted"))
   (println "Close database connection pool")
   (.close datasource)
   )
 
-(defmethod ig/init-key :jackdbd.reitit-demo-api/router [k m]
+(defmethod ig/init-key :reitit-demo-api/router [k m]
   (println (str "system key " k " initialized to " m))
   (let [datasource (:datasource m)
         handler (def-app datasource)]
     handler))
 
-(defmethod ig/halt-key! :jackdbd.reitit-demo-api/router [k _handler]
+(defmethod ig/halt-key! :reitit-demo-api/router [k _handler]
   (println (str "system key " k " halted")))
 
-(defmethod ig/init-key :jackdbd.reitit-demo-api/http-server [k m]
+(defmethod ig/init-key :reitit-demo-api/http-server [k m]
   (println (str "system key " k " initialized to " m))
   (let [handler (:handler m)
         jetty-options (dissoc m :handler)]
     (println (str "HTTP server will listen on port " (:port jetty-options)))
     (jetty/run-jetty handler jetty-options)))
 
-(defmethod ig/halt-key! :jackdbd.reitit-demo-api/http-server [k server]
+(defmethod ig/halt-key! :reitit-demo-api/http-server [k server]
   (println (str "system key " k " halted"))
   (println "Stop HTTP server")
   (.stop server))
@@ -92,7 +92,7 @@
 
 (comment
   ;; This works only when the system is running. Call (iu/go :dev) first.
-  (def app (:jackdbd.reitit-demo-api/router (iu/system)))
+  (def app (:reitit-demo-api/router (iu/system)))
 
   ;; try sending some stuff to the REPL
   (app {:request-method :get :uri "/"})

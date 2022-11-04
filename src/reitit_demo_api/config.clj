@@ -19,7 +19,7 @@
 (defn db-spec
   "Retrieves the configuration for the database, for the given profile (:dev, :test, :prod)."
   [profile]
-  (:jackdbd.reitit-demo-api/relational-store (aero-config profile)))
+  (:reitit-demo-api/relational-store (aero-config profile)))
 
 (defn jdbc-url
   [profile]
@@ -48,9 +48,9 @@
 
   (jdbc-url :dev)
 
-  (:jackdbd.reitit-demo-api/relational-store (aero-config :dev))
-  (:jackdbd.reitit-demo-api/router (aero-config :dev)) 
-  (:jackdbd.reitit-demo-api/http-server (aero-config :dev))
+  (:reitit-demo-api/relational-store (aero-config :dev))
+  (:reitit-demo-api/router (aero-config :dev)) 
+  (:reitit-demo-api/http-server (aero-config :dev))
 
   (db-spec :dev)
   (aero-prep :dev)
