@@ -21,7 +21,7 @@
   [profile]
   (:reitit-demo-api/relational-store (aero-config profile)))
 
-(defn fly.io-db-url->jdbc-url
+(defn db-url->jdbc-url
   [db-url]
   (let [s (last (str/split (str db-url) (re-pattern "//")))
         [user-password host-port] (str/split s (re-pattern "@"))
@@ -34,7 +34,7 @@
   (let [{:keys [dbtype db-url host port dbname user password]} (db-spec profile)]
     (case profile
       :dev (format "jdbc:%s://%s:%s/%s?user=%s&password=%s", dbtype host port dbname user password)
-      :prod (fly.io-db-url->jdbc-url db-url))))
+      :prod (db-url->jdbc-url db-url))))
 
  (defn aero-prep
   "Parses the system config and updates values for the given profile.
